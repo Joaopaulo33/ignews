@@ -9,7 +9,6 @@ function Myapp({Component, pageProps}:AppProps) {
             <Header/>
             <Component{...pageProps}/>
         </>
-       
         )
 }
 
