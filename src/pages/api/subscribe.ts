@@ -5,13 +5,13 @@ import {stripe} from '../../services/stripe'
 export default async(req: NextApiRequest, res: NextApiResponse)=>{
   if(req.method === 'POST'){
     const session= await getSession({req})
-
+    //Criamos um usuário dentro do stripe
     const stripeCustomer= await stripe.customers.create({
       email: session.user.email,
       //metadata
     })
 
-
+    //criamos a sessão
     const stripeCheckoutSession= await stripe.checkout.sessions.create({
       customer: stripeCustomer.id,
       payment_method_types:['card'],
