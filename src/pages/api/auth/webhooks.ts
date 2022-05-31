@@ -23,11 +23,11 @@ export const config={
 
 
 const relevantEvents = new Set([
-    'checkout.session.completed'
+    'customer.created'
 ])
 
 export default async(req:NextApiRequest, res:NextApiResponse)=>{
-
+if(req.method === 'POST'){
     const buf = await buffer(req)
     const secret = req.headers['stripe-signature']
 
@@ -39,7 +39,18 @@ export default async(req:NextApiRequest, res:NextApiResponse)=>{
         return res.status(400).send(`Webhook error: ${err.message}`)
     }
 
-    res.status(200).json({ok: true});
+    const {type} = event
 
+    if(relevantEvents.has(type)){
+        //fazer algo
+        console.log('Evento recebido',event)
+    }
+    res.json({received:true})
+
+    res.json({ok: true});
+    }else{
+        res.setHeader('Allow', 'POST')
+        res.status(405).end('Method not allowed')
+    }   
 
 }
