@@ -9,6 +9,7 @@ async function buffer(readable:Readable){
     const chunks = [];
 
     for await(const chunk of readable){
+        
         chunks.push(
             typeof chunk === 'string'? Buffer.from(chunk) : chunk
         )
@@ -26,7 +27,7 @@ const relevantEvents = new Set([
 ])
 
 export default async(req:NextApiRequest, res:NextApiResponse)=>{
-    
+
     if(req.method === 'POST'){
         const buf = await buffer(req)
         const secret = req.headers['stripe-signature']
@@ -41,11 +42,9 @@ export default async(req:NextApiRequest, res:NextApiResponse)=>{
         const {type} = event
         
         if(relevantEvents.has(type)){
-            console.log("alalalalalalal")
             try{
                 switch(type){
                     case "checkout.session.completed":
-                        console.log("alalalalalalalalalaall")
                         const checkoutSession = event.data.object as Stripe.Checkout.Session
                         await saveSubscription(
                             checkoutSession.subscription.toString(),
@@ -60,9 +59,9 @@ export default async(req:NextApiRequest, res:NextApiResponse)=>{
              }
         }
         res.json({received:true})    
-}else{
-    res.setHeader('Allow', 'POST')
-    res.status(405).end('Method not allowed')
-}   
+    }else{
+        res.setHeader('Allow', 'POST')
+        res.status(405).end('Method not allowed')
+    }   
 
 }
